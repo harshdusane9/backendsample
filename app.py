@@ -1,9 +1,12 @@
+import os
 from flask import Flask, render_template, request, jsonify
-from google import genai
+import google.generativeai as genai
 
 app = Flask(__name__)
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-client = genai.Client(api_key=GOOGLE_API_KEY)
+genai.configure(api_key=GOOGLE_API_KEY)
+
+model = genai.GenerativeModel("gemini-1.5-pro")  # Use latest available model
 
 @app.route("/")
 def home():
@@ -32,18 +35,13 @@ def generate():
         4. Question four
         """
 
-        response = client.models.generate_content(
-            model="gemini-2.5-pro",
-            contents=prompt
-        )
+        response = model.generate_content(prompt)
 
         questions_text = response.text
 
-        # Split questions into list (splitting by newline or numbering)
         questions = []
         for line in questions_text.strip().split('\n'):
             if line.strip():
-                # Remove numbering like '1. ', '2. ' etc.
                 question = line.strip().split('. ', 1)[-1]
                 questions.append(question)
 
