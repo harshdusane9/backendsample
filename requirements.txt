@@ -1,4 +1,4 @@
 flask
 google-generativeai
 gunicorn
-pip install flask-cors
+flask-cors
