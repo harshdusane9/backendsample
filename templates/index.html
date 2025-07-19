@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interview Simulator</title>
+    <style>
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #questionContainer {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Interactive Interview Simulator</h2>
+
+<textarea id="job_desc" rows="6" cols="50" placeholder="Enter job description..."></textarea><br><br>
+<button onclick="startInterview()">Start Interview</button>
+
+<div class="loader" id="loader"></div>
+
+<div id="questionContainer"></div>
+<button id="nextBtn" onclick="nextQuestion()" style="display:none;">Next</button>
+
+<script>
+    let questions = [];
+    let currentIndex = 0;
+
+    function startInterview() {
+        const jobDesc = document.getElementById('job_desc').value;
+        const loader = document.getElementById('loader');
+        const container = document.getElementById('questionContainer');
+        const nextBtn = document.getElementById('nextBtn');
+
+        loader.style.display = 'block';
+        container.innerHTML = '';
+        nextBtn.style.display = 'none';
+        currentIndex = 0;
+
+        fetch('/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ job_description: jobDesc })
+        })
+        .then(response => response.json())
+        .then(data => {
+            loader.style.display = 'none';
+
+            if (data.error) {
+                container.innerHTML = "Error: " + data.error;
+                return;
+            }
+
+            questions = data.questions;  // ✅ Already an array
+            showQuestion();
+        })
+        .catch(err => {
+            loader.style.display = 'none';
+            container.innerHTML = "Fetch error: " + err;
+        });
+    }
+
+    function showQuestion() {
+        const container = document.getElementById('questionContainer');
+        const nextBtn = document.getElementById('nextBtn');
+
+        if (currentIndex < questions.length) {
+            container.innerHTML = `<b>Question ${currentIndex + 1}:</b> ${questions[currentIndex]}`;
+            nextBtn.style.display = 'inline';
+        } else {
+            container.innerHTML = "<b>Interview Complete!</b>";
+            nextBtn.style.display = 'none';
+        }
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        showQuestion();
+    }
+</script>
+
+</body>
+</html>
