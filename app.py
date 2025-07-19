@@ -2,9 +2,8 @@ from flask import Flask, render_template, request, jsonify
 from google import genai
 
 app = Flask(__name__)
-
-# Gemini Client Initialization (keep your working API key)
-client = genai.Client(api_key="AIzaSyCgJL3zD-HvSnSawLZMWuUrempEpSCyyZM")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 @app.route("/")
 def home():
