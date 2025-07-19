@@ -9,7 +9,7 @@ CORS(app)
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=GOOGLE_API_KEY)
 
-model = genai.GenerativeModel("gemini-1.5-pro")  # Use latest available model
+model = genai.GenerativeModel("gemini-1.5-flash")  # Use latest available model
 
 @app.route("/")
 def home():
